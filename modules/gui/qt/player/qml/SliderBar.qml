@@ -28,20 +28,20 @@ import VLC.MainInterface
 T.ProgressBar {
     id: control
 
-    readonly property real _hoveredScalingFactor: 1.8
-    property int barHeight: VLCStyle.dp(5, VLCStyle.scale)
+    readonly property real _hoveredScalingFactor: 2.2
+    property int barHeight: VLCStyle.dp(3, VLCStyle.scale)
     readonly property real _scaledBarHeight: control.barHeight * _hoveredScalingFactor
     readonly property real _scaledY: (-control.barHeight / 2) * (control._hoveredScalingFactor - 1)
 
     property bool _isSeekPointsShown: true
     readonly property int _seekPointsDistance: VLCStyle.dp(2, VLCStyle.scale)
-    readonly property int _seekPointsRadius: VLCStyle.dp(0.5, VLCStyle.scale)
+    readonly property int _seekPointsRadius: control.barHeight / 2
     readonly property real _scaledSeekPointsRadius: _seekPointsRadius * _hoveredScalingFactor
 
     property bool _currentChapterHovered: false
     property real _tooltipPosition: (Widgets.PointingToolTipAttached.instance?.pos.x ?? 0.0) / width
 
-    property color backgroundColor: theme.bg.primary
+    property color backgroundColor: Qt.rgba(1.0, 1.0, 1.0, 0.22)
     property real touchHandlerMargin: VLCStyle.touchHandlerMargin
 
     Keys.onRightPressed: Player.jumpFwd()
@@ -568,15 +568,18 @@ T.ProgressBar {
     Rectangle {
         id: sliderHandle
 
-        property int _size: control.barHeight * 3
+        property int _size: control.barHeight * 4.0
 
         x: (control.visualPosition * control.availableWidth) - width / 2
         y: (control.barHeight - height) / 2
 
         implicitWidth: sliderHandle._size
         implicitHeight: sliderHandle._size
-        radius: VLCStyle.margin_small
-        color: theme.fg.primary
+        radius: width / 2
+        color: "white"
+
+        border.width: 1
+        border.color: Qt.rgba(0.0, 0.0, 0.0, 0.20)
 
         // We use dynamic mutability group because time interpolation
         // may induce rapid change:

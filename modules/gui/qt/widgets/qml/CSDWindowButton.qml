@@ -49,6 +49,7 @@ T.Button {
     background: Rectangle {
         height: control.height
         width: control.width
+        radius: VLCStyle.dp(6, VLCStyle.scale)
         color: {
             if (control.pressed || (control.externalPressed && control._paintHovered))
                 return control.isThemeDark ? Qt.lighter(control.hoverColor, 1.2)
@@ -58,6 +59,13 @@ T.Button {
                 return control.hoverColor
 
             return "transparent"
+        }
+
+        Behavior on color {
+            ColorAnimation {
+                duration: VLCStyle.duration_veryShort
+                easing.type: Easing.OutCubic
+            }
         }
     }
 

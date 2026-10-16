@@ -113,7 +113,10 @@ T.Pane {
     }
 
     background: Rectangle {
-        color: theme.bg.primary
+        radius: VLCStyle.dp(16, VLCStyle.scale)
+        color: Qt.rgba(0.09, 0.10, 0.12, 0.80)
+        border.width: 1
+        border.color: Qt.rgba(1.0, 1.0, 1.0, 0.16)
     }
 
     contentItem: ColumnLayout {

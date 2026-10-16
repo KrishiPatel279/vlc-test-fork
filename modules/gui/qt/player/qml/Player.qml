@@ -323,7 +323,7 @@ FocusScope {
                     visible: rootPlayer.displayFadeRectangles && !topBarAcrylicBg.visible
 
                     gradient: Gradient {
-                        GradientStop { position: 0; color: Qt.rgba(0, 0, 0, .8) }
+                        GradientStop { position: 0; color: Qt.rgba(0, 0, 0, 0.40) }
                         GradientStop { position: 1; color: "transparent" }
                     }
                 }
@@ -337,11 +337,10 @@ FocusScope {
 
                     gradient: Gradient {
                         GradientStop { position: 0; color: "transparent" }
-                        GradientStop { position: .64; color: Qt.rgba(0, 0, 0, .8) }
-                        GradientStop { position: 1; color: "black" }
+                        GradientStop { position: 1; color: Qt.rgba(0, 0, 0, 0.35) }
                     }
 
-                    visible: rootPlayer.displayFadeRectangles && !(controlBar.background && controlBar.background.visible)
+                    visible: rootPlayer.displayFadeRectangles && !rootPlayer._controlsUnderVideo
                 }
             }
         }
@@ -1284,17 +1283,23 @@ FocusScope {
 
         anchors {
             bottom: parent.bottom
-            left: parent.left
-            right: parent.right
+            bottomMargin: rootPlayer._controlsUnderVideo ? 0 : VLCStyle.margin_large
+            horizontalCenter: rootPlayer._controlsUnderVideo ? undefined : parent.horizontalCenter
+            left: rootPlayer._controlsUnderVideo ? parent.left : undefined
+            right: rootPlayer._controlsUnderVideo ? parent.right : undefined
         }
+
+        width: rootPlayer._controlsUnderVideo ? parent.width
+                                              : Math.min(parent.width - VLCStyle.margin_large * 2, VLCStyle.dp(780, VLCStyle.scale))
 
         hoverEnabled: true
 
         focus: true
 
-        rightPadding: VLCStyle.applicationHorizontalMargin
-        leftPadding: VLCStyle.applicationHorizontalMargin
-        bottomPadding: VLCStyle.applicationVerticalMargin + VLCStyle.margin_xsmall
+        rightPadding: rootPlayer._controlsUnderVideo ? VLCStyle.applicationHorizontalMargin : VLCStyle.margin_large
+        leftPadding: rootPlayer._controlsUnderVideo ? VLCStyle.applicationHorizontalMargin : VLCStyle.margin_large
+        topPadding: rootPlayer._controlsUnderVideo ? 0 : VLCStyle.margin_xsmall
+        bottomPadding: rootPlayer._controlsUnderVideo ? (VLCStyle.applicationVerticalMargin + VLCStyle.margin_xsmall) : VLCStyle.margin_small
 
         textPosition: (MainCtx.pinVideoControls)
                       ? ControlBar.TimeTextPosition.LeftRightSlider
@@ -1333,24 +1338,37 @@ FocusScope {
 
         onHoveredChanged: rootPlayer.lockUnlockAutoHide(hovered)
 
-        background: Rectangle {
-            id: controlBarBackground
+        background: Item {
+            id: controlBarBackgroundContainer
 
-            visible: !MainCtx.hasEmbededVideo || MainCtx.pinVideoControls || !rootPlayer.displayFadeRectangles
-
-            opacity: {
-                if (MainCtx.hasEmbededVideo && !MainCtx.pinVideoControls && !rootPlayer.displayFadeRectangles) {
-                    return 0.6
-                } else if ((Window.visibility === Window.FullScreen) && MainCtx.hasEmbededVideo) {
-                    return MainCtx.pinOpacity
-                } else if (AcrylicController.enabled || !MainCtx.hasEmbededVideo) {
-                    return 0.7
-                } else {
-                    return 1.0
-                }
+            Widgets.RoundedRectangleShadow {
+                anchors.fill: parent
+                visible: !rootPlayer._controlsUnderVideo
+                radius: VLCStyle.dp(18, VLCStyle.scale)
+                blurRadius: VLCStyle.dp(22, VLCStyle.scale)
+                yOffset: VLCStyle.dp(6, VLCStyle.scale)
+                color: Qt.rgba(0.0, 0.0, 0.0, 0.50)
             }
 
-            color: windowTheme.bg.primary
+            Rectangle {
+                id: controlBarBackground
+                anchors.fill: parent
+                radius: rootPlayer._controlsUnderVideo ? 0 : VLCStyle.dp(18, VLCStyle.scale)
+
+                color: rootPlayer._controlsUnderVideo
+                       ? windowTheme.bg.primary
+                       : Qt.rgba(0.09, 0.10, 0.12, 0.82)
+
+                border.width: rootPlayer._controlsUnderVideo ? 0 : 1
+                border.color: Qt.rgba(1.0, 1.0, 1.0, 0.18)
+
+                Behavior on radius {
+                    NumberAnimation {
+                        duration: VLCStyle.duration_short
+                        easing.type: Easing.OutCubic
+                    }
+                }
+            }
         }
 
         FadeControllerStateGroup {

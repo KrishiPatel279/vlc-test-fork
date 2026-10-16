@@ -217,8 +217,8 @@ T.Control {
                 return VLCIcons.play_filled
         }
 
-        color: cursorInside ? theme.accent
-                            : "black"  //foreground is always black
+        color: cursorInside ? (theme.accent.alpha > 0.1 ? theme.accent : "#60CDFF")
+                            : "white"
 
         font.pixelSize: Math.round(parent.height / 1.7)
 
@@ -260,9 +260,18 @@ T.Control {
 
             radius: width / 2
 
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: "#e25b01" }
-                GradientStop { position: 1.0; color: "#f89a06" }
+            color: mouseArea.cursorInside ? Qt.rgba(1.0, 1.0, 1.0, 0.28)
+                                         : Qt.rgba(1.0, 1.0, 1.0, 0.16)
+
+            border.width: 1
+            border.color: mouseArea.cursorInside ? Qt.rgba(1.0, 1.0, 1.0, 0.45)
+                                                : Qt.rgba(1.0, 1.0, 1.0, 0.24)
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: VLCStyle.duration_short
+                    easing.type: Easing.OutCubic
+                }
             }
 
             Widgets.RoundedRectangleShadow {
@@ -271,16 +280,16 @@ T.Control {
                 visible: opacity > 0
                 opacity: 0
 
-                blurRadius: VLCStyle.dp(9, VLCStyle.scale)
+                blurRadius: VLCStyle.dp(12, VLCStyle.scale)
                 yOffset: VLCStyle.dp(4, VLCStyle.scale)
 
-                color: theme.accent.alpha(0.29)
+                color: Qt.rgba(1.0, 1.0, 1.0, 0.25)
             }
 
             Rectangle {
                 id: innerRectangle
 
-                color: "white"
+                color: Qt.rgba(1.0, 1.0, 1.0, 0.12)
 
                 anchors.fill: parent
                 anchors.margins: _diminished ? (parent.width / 2)
